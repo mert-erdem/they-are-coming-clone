@@ -2,15 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+[SelectionBase]
+public class PlayerController : Singleton<PlayerController>
 {
     [SerializeField] private Transform sideMovementRoot;
     [SerializeField] private Transform borderLeft, borderRight;
     [Header("Specs")]
-    [SerializeField] private float speed = 10f;
-    [SerializeField] [Range(0.1f, 1f)] private float speedHorizontal = 0.1f;
+    [SerializeField] [Range(1, 10)] private int speed = 10;
+    [SerializeField] [Range(0.01f, 0.2f)] private float speedHorizontal = 0.1f;
+    [SerializeField] private float borderNarrowingDelta = 0.1f;
+
     private Vector3 mouseRootPos;
     private float inputHorizontal;
+    
 
     void Start()
     {
@@ -49,5 +53,30 @@ public class PlayerController : MonoBehaviour
         sideRootPos += speedHorizontal * inputHorizontal * Vector3.right;
         sideRootPos.x = Mathf.Clamp(sideRootPos.x, borderLeft.position.x, borderRight.position.x);
         sideMovementRoot.localPosition = sideRootPos;
+    }
+
+    /// <summary>
+    /// Update the max x-axis travel distance for each new survivor (to expand -1, to narrow 1)
+    /// </summary>
+    public void UpdateBorders(int direction)
+    {
+        var borderLeftPos = borderLeft.position;
+        var borderRightPos = borderRight.position;
+
+        borderLeftPos.x += borderNarrowingDelta * direction;
+        borderRightPos.x -= borderNarrowingDelta * direction;
+
+        if (borderLeftPos.x > 0f || borderRightPos.x < 0f) return;
+
+        borderLeft.position = borderLeftPos;
+        borderRight.position = borderRightPos;
+    }
+
+    private void OnTriggerEnter(Collider other)// side root (for gates)
+    {
+        if(other.CompareTag("Gate"))
+        {
+
+        }
     }
 }
