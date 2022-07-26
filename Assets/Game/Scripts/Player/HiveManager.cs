@@ -12,9 +12,9 @@ public class HiveManager : Singleton<HiveManager>
     [Tooltip("Minimum interaction distance for a neighbourhood")]
     private float neighbourDistance = 2f;
     public float NeighbourDistance => neighbourDistance;
-    [SerializeField] [Range(0.5f, 10f)]
+    [SerializeField] [Range(0.5f, 1f)]
     [Tooltip("The maximum distance that a survivor can be closer to other")]
-    private float closestDistance = 2f;
+    private float closestDistance = 0.55f;
     public float ClosestDistance => closestDistance;
 
 
@@ -24,6 +24,7 @@ public class HiveManager : Singleton<HiveManager>
         survivors.Add(newSurvivor);
         newSurvivor.transform.position = hiveRoot.position;
         newSurvivor.transform.SetParent(hiveRoot);
+        WeaponManager.Instance.GiveWeapon(newSurvivor);
 
         if(survivors.Count % 5 == 0)
         {

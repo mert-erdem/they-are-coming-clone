@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Survivor
   - Gate
+  - Weapon
   layers:
   - Default
   - TransparentFX

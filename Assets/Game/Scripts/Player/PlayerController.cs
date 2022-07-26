@@ -5,8 +5,7 @@ using UnityEngine;
 [SelectionBase]
 public class PlayerController : Singleton<PlayerController>
 {
-    [SerializeField] private Transform sideMovementRoot;
-    [SerializeField] private Transform borderLeft, borderRight;
+    [SerializeField] private Transform sideMovementRoot, borderLeft, borderRight;
     [Header("Specs")]
     [SerializeField] [Range(1, 10)] private int speed = 10;
     [SerializeField] [Range(0.01f, 0.2f)] private float speedHorizontal = 0.1f;
@@ -56,7 +55,7 @@ public class PlayerController : Singleton<PlayerController>
     }
 
     /// <summary>
-    /// Update the max x-axis travel distance for each new survivor (to expand -1, to narrow 1)
+    /// Update the max x-axis travel distance for each new survivor (to expand -1, to narrow 1).
     /// </summary>
     public void UpdateBorders(int direction)
     {
@@ -77,6 +76,11 @@ public class PlayerController : Singleton<PlayerController>
         if(other.CompareTag("Gate"))
         {
 
+        }
+        else if(other.CompareTag("Weapon"))
+        {
+            WeaponManager.Instance.UpdateWeapons(other.name);
+            Destroy(other.gameObject);
         }
     }
 }
