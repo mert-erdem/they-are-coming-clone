@@ -9,7 +9,7 @@ public class ObjectPool<T, T1> : MonoBehaviour where T : Component where T1 : Co
 
     [SerializeField] private T poolObject;
     [SerializeField] private int poolSize;
-    [SerializeField] private float effectDuration = 1f;
+    [SerializeField] private float objectLifetime = 1f;
     private List<T> pool;
 
 
@@ -55,8 +55,13 @@ public class ObjectPool<T, T1> : MonoBehaviour where T : Component where T1 : Co
     }
     private IEnumerator PullObjectBackRoutine(T theObject)
     {
-        yield return new WaitForSeconds(effectDuration);
+        yield return new WaitForSeconds(objectLifetime);
 
+        theObject.gameObject.SetActive(false);
+    }
+
+    public void PullObjectBackImmediate(T theObject)
+    {
         theObject.gameObject.SetActive(false);
     }
 }

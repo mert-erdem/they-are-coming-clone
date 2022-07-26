@@ -20,7 +20,8 @@ public abstract class Weapon : MonoBehaviour
 
     public virtual void Fire()
     {
-        // will be replaced with object pool
-        Instantiate(Bullet, Muzzle.position, Quaternion.identity);
+        var bullet = BulletPool.Instance.GetObject();
+        bullet.transform.position = Muzzle.position;
+        BulletPool.Instance.PullObjectBack(bullet);
     }
 }
