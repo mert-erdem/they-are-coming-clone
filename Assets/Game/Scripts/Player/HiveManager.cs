@@ -18,12 +18,18 @@ public class HiveManager : Singleton<HiveManager>
     public float ClosestDistance => closestDistance;
 
 
-    public void AddSurvivor(Survivor newSurvivor)
+    public void Join(Survivor newSurvivor)
     {
-        newSurvivor.tag = "Untagged";
+        newSurvivor.tag = "HiveSurvivor";
+
         survivors.Add(newSurvivor);
-        newSurvivor.transform.position = hiveRoot.position;
+
+        var newSurvivorPos = hiveRoot.position;
+        newSurvivorPos.y = newSurvivor.transform.position.y;
+        newSurvivor.transform.position = newSurvivorPos;
+
         newSurvivor.transform.SetParent(hiveRoot);
+
         WeaponManager.Instance.GiveWeapon(newSurvivor);
 
         if(survivors.Count % 5 == 0)
@@ -34,7 +40,7 @@ public class HiveManager : Singleton<HiveManager>
         // update ui
     }
 
-    public void RemoveSurvivor(int count)
+    public void Leave(int count)
     {
         // remove survivor/s
         // update borders

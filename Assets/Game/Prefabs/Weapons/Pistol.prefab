@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Bullet: {fileID: 2576287913922500537, guid: 2bd3e5fd9e35e43d1ac7022f10d82af7, type: 3}
   Muzzle: {fileID: 4914014846755104083}
-  FireRate: 1
+  FireRate: 1.5
   LastFireTime: 0
 --- !u!1 &4914014846755104082
 GameObject:

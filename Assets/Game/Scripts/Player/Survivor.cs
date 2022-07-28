@@ -7,14 +7,18 @@ public class Survivor : MonoBehaviour
     [SerializeField] private new Rigidbody rigidbody;
     [SerializeField] private List<Weapon> weapons;
 
-    void Start()
+    private bool inHive = false;
+
+    private void Start()
     {
-        
+        if (CompareTag("HiveSurvivor"))// manually added survivor/s at editor time
+            inHive = true;
     }
 
-    void LateUpdate()
+    void Update()
     {
-        Avoid();
+        if (inHive)
+            Avoid();
     }
 
     private void Avoid()
@@ -56,14 +60,10 @@ public class Survivor : MonoBehaviour
     {
         foreach (var weapon in weapons)
         {
-            if(weapon.name == weaponName)
-            {
+            if (weapon.name == weaponName)
                 weapon.gameObject.SetActive(true);
-            }
             else
-            {
                 weapon.gameObject.SetActive(false);
-            }
         }
     }
 
@@ -76,11 +76,24 @@ public class Survivor : MonoBehaviour
         weapon.gameObject.SetActive(true);
     }
 
+    private void Die()
+    {
+
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider.CompareTag("Survivor") && collision.transform.TryGetComponent(out Survivor newSurvivor))
+        if(collision.collider.CompareTag("HiveSurvivor"))
         {
-            HiveManager.Instance.AddSurvivor(newSurvivor);            
+            if (!inHive)
+            {
+                inHive = true;
+                HiveManager.Instance.Join(this);           
+            }         
+        }
+        else if(collision.collider.CompareTag("Enemy"))
+        {
+            Die();// whether in hive or not
         }
     }
 }

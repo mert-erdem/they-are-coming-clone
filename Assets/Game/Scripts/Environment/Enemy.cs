@@ -9,10 +9,17 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float speed = 5f;
 
     private Transform target;
-    
+
+    private int currentHealth;
+
+    private void OnEnable()
+    {
+        currentHealth = health;
+    }
+
     private void Start()
     {
-        target = HiveManager.Instance.transform;
+        
     }
 
     private void Update()
@@ -20,17 +27,25 @@ public class Enemy : MonoBehaviour
         ChaseThePlayer();
     }
 
+    public void SetTarget(Transform target)
+    {
+        this.target = target;
+    }
+
     private void ChaseThePlayer()
     {
-        transform.LookAt(target, Vector3.up);
-        transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        var newPos = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        var lookOnLook = Quaternion.LookRotation(target.position - transform.position);
+        var newRot = Quaternion.Slerp(transform.rotation, lookOnLook, Time.deltaTime * 10f);
+
+        transform.SetPositionAndRotation(newPos, newRot);
     }
 
     public void TakeDamage(int damage)
     {
-        health -= damage;
+        currentHealth -= damage;
 
-        if (health <= 0)
+        if (currentHealth <= 0)
             Die();
     }
 
@@ -38,6 +53,6 @@ public class Enemy : MonoBehaviour
     {
         // animation etc.
         // object pool for enemies
-        Destroy(gameObject);
+        EnemyPool.Instance.PullObjectBackImmediate(this);
     }
 }
