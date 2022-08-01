@@ -49,6 +49,22 @@ public class ObjectPool<T, T1> : MonoBehaviour where T : Component where T1 : Co
         return null;
     }
 
+    public List<T> GetObject(int count)
+    {
+        List<T> objects = new List<T>();
+
+        for (int i = 0; i < poolSize; i++)
+        {
+            if(!pool[i].gameObject.activeInHierarchy && objects.Count < count)
+            {
+                pool[i].gameObject.SetActive(true);
+                objects.Add(pool[i]);
+            }
+        }
+
+        return objects;
+    }
+
     public void PullObjectBack(T theObject)
     {
         StartCoroutine(PullObjectBackRoutine(theObject));

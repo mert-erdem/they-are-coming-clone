@@ -78,7 +78,14 @@ public class Survivor : MonoBehaviour
 
     private void Die()
     {
-
+        if(inHive)
+        {
+            HiveManager.Instance.Leave(this);
+        }
+        else
+        {
+            SurvivorPool.Instance.PullObjectBackImmediate(this);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)

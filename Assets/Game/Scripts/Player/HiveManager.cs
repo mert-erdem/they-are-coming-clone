@@ -40,10 +40,20 @@ public class HiveManager : Singleton<HiveManager>
         // update ui
     }
 
-    public void Leave(int count)
+    public void Leave(Survivor survivor)
     {
-        // remove survivor/s
+        // remove survivor
+        survivors.Remove(survivor);
+        SurvivorPool.Instance.PullObjectBackImmediate(survivor);
         // update borders
+        PlayerController.Instance.UpdateBorders(1);
         // update ui
+    }
+
+    public void AddSurvivors(int count)
+    {
+        // with object pooling
+        var survivors = SurvivorPool.Instance.GetObject(count);
+        survivors.ForEach(x => Join(x));
     }
 }

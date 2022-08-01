@@ -71,11 +71,36 @@ public class PlayerController : Singleton<PlayerController>
         borderRight.position = borderRightPos;
     }
 
+    private void HandleWithGate(string gateName)
+    {
+        char process = gateName[0];
+        string number = gateName.Substring(1, gateName.Length - 1);
+        bool success = int.TryParse(number, out int count);
+        
+        if (success)
+        {
+            switch (process)
+            {
+                case '+':
+                    HiveManager.Instance.AddSurvivors(count);
+                    break;
+                case 'x':
+                    count = HiveManager.Instance.Survivors.Count * (count - 1);
+                    HiveManager.Instance.AddSurvivors(count);
+                    break;
+            }
+        }
+        else
+        {
+            print("Couldn't parse the gate");
+        }
+    }
+
     private void OnTriggerEnter(Collider other)// side root (for gates)
     {
         if(other.CompareTag("Gate"))
         {
-
+            HandleWithGate(other.name);
         }
         else if(other.CompareTag("Weapon"))
         {
