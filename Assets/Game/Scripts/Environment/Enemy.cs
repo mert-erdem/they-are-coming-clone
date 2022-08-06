@@ -2,24 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
     [Header("Specs")]
     [SerializeField] private int health = 1;
+    public int Health
+    {
+        set { this.health = value; }
+        get { return health; }
+    }
     [SerializeField] private float speed = 5f;
+    public float Speed
+    {
+        set { this.speed = value; }
+        get { return speed; }
+    }
 
     private Transform target;
-
     private int currentHealth;
+
 
     private void OnEnable()
     {
         currentHealth = health;
-    }
-
-    private void Start()
-    {
-        
     }
 
     private void Update()
@@ -34,8 +39,10 @@ public class Enemy : MonoBehaviour
 
     private void ChaseThePlayer()
     {
-        var newPos = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
-        var lookOnLook = Quaternion.LookRotation(target.position - transform.position);
+        var targetPos = target.position;
+        targetPos.z -= 1.5f;
+        var newPos = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
+        var lookOnLook = Quaternion.LookRotation(targetPos - transform.position);
         var newRot = Quaternion.Slerp(transform.rotation, lookOnLook, Time.deltaTime * 10f);
 
         transform.SetPositionAndRotation(newPos, newRot);

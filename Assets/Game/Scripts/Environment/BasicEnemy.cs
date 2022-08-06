@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyPool : ObjectPoolMultiple<Enemy, EnemyPool>
+public class BasicEnemy : Enemy
 {
     
 }
