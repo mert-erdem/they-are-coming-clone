@@ -54,6 +54,6 @@ public class HiveManager : Singleton<HiveManager>
     {
         // with object pooling
         var survivors = SurvivorPool.Instance.GetObject(count);
-        survivors.ForEach(x => Join(x));
+        survivors.ForEach(x => x.EnterTheHive());
     }
 }

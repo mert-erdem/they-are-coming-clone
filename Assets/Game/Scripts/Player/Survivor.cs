@@ -5,20 +5,44 @@ using UnityEngine;
 public class Survivor : MonoBehaviour
 {
     [SerializeField] private new Rigidbody rigidbody;
+    [SerializeField] private Animator animator;
     [SerializeField] private List<Weapon> weapons;
 
     private bool inHive = false;
+    private State stateIdle, stateRun, stateCurrent;
+
+    private void Awake()
+    {
+        stateIdle = new State(() => { }, () => { }, () => { });
+        stateRun = new State(Avoid, StartRunState, () => { });
+        SetState(stateIdle);
+    }
 
     private void Start()
     {
         if (CompareTag("HiveSurvivor"))// manually added survivor/s at editor time
             inHive = true;
+
+        // TODO first survivors must be at runState when gamestart action fired
     }
 
     void Update()
     {
-        if (inHive)
-            Avoid();
+        stateCurrent.onUpdate();
+    }
+
+    private void SetState(State state)
+    {
+        if (stateCurrent != null)
+            stateCurrent.onStateExit();
+
+        stateCurrent = state;
+        stateCurrent.onStateEnter();
+    }
+
+    private void StartRunState()
+    {
+        animator.SetTrigger("Run");
     }
 
     private void Avoid()
@@ -76,6 +100,13 @@ public class Survivor : MonoBehaviour
         weapon.gameObject.SetActive(true);
     }
 
+    public void EnterTheHive()
+    {
+        inHive = true;
+        SetState(stateRun);
+        HiveManager.Instance.Join(this);
+    }
+
     private void Die()
     {
         if(inHive)
@@ -94,8 +125,7 @@ public class Survivor : MonoBehaviour
         {
             if (!inHive)
             {
-                inHive = true;
-                HiveManager.Instance.Join(this);           
+                EnterTheHive();
             }         
         }
         else if(collision.collider.CompareTag("Enemy"))

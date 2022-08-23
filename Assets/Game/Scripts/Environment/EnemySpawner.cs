@@ -24,7 +24,7 @@ public class EnemySpawner : Singleton<EnemySpawner>
         var randomX = Random.Range(spawnBorderLeft.position.x, spawnBorderRight.position.x);
         var spawnPos = new Vector3(randomX, 0f, transform.position.z);
         // object pool
-        var enemy = EnemyPool.Instance.GetObject(typeof(BigEnemy));
+        var enemy = EnemyPool.Instance.GetObject(typeof(BasicEnemy));
         enemy.transform.position = spawnPos;
         enemy.SetTarget(target);
         // change rotation
