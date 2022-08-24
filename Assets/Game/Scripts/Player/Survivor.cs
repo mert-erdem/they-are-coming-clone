@@ -128,7 +128,7 @@ public class Survivor : MonoBehaviour
                 EnterTheHive();
             }         
         }
-        else if(collision.collider.CompareTag("Enemy"))
+        else if(collision.collider.CompareTag("Enemy") || collision.collider.CompareTag("Obstacle"))
         {
             Die();// whether in hive or not
         }

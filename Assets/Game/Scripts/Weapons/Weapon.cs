@@ -7,7 +7,7 @@ public abstract class Weapon : MonoBehaviour
     public GameObject Bullet;
     public Transform Muzzle;
     public float FireRate;
-    public float LastFireTime = 0f;
+    private float LastFireTime = 0f;
 
     private void Update()
     {

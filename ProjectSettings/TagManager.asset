@@ -9,6 +9,7 @@ TagManager:
   - Weapon
   - Enemy
   - HiveSurvivor
+  - Obstacle
   layers:
   - Default
   - TransparentFX
