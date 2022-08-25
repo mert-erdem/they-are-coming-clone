@@ -6,6 +6,8 @@ using UnityEngine;
 public class PlayerController : Singleton<PlayerController>
 {
     [SerializeField] private Transform sideMovementRoot, borderLeft, borderRight;
+    [SerializeField] private SphereCollider sideRootCollider;
+    [SerializeField] private float colliderExpandingDelta = 0.1f;
     [Header("Specs")]
     [SerializeField] [Range(1, 10)] private int speed = 10;
     [SerializeField] [Range(0.01f, 0.2f)] private float speedHorizontal = 0.1f;
@@ -69,6 +71,8 @@ public class PlayerController : Singleton<PlayerController>
 
         borderLeft.position = borderLeftPos;
         borderRight.position = borderRightPos;
+
+        sideRootCollider.radius += colliderExpandingDelta * direction;
     }
 
     private void HandleWithGate(string gateName)
@@ -101,11 +105,17 @@ public class PlayerController : Singleton<PlayerController>
         if(other.CompareTag("Gate"))
         {
             HandleWithGate(other.name);
+            Destroy(other.transform.parent.parent.gameObject);
         }
         else if(other.CompareTag("Weapon"))
         {
             WeaponManager.Instance.UpdateWeapons(other.name);
             Destroy(other.gameObject);
+        }
+        else if(other.CompareTag("MiniGame"))
+        {
+            GameManager.ActionMiniGame?.Invoke();
+            this.enabled = false;
         }
     }
 }

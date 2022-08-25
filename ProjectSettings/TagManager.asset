@@ -10,6 +10,7 @@ TagManager:
   - Enemy
   - HiveSurvivor
   - Obstacle
+  - MiniGame
   layers:
   - Default
   - TransparentFX

@@ -7,6 +7,7 @@ public class HiveManager : Singleton<HiveManager>
     [SerializeField] private Transform hiveRoot;
     [SerializeField] private List<Survivor> survivors;
     public List<Survivor> Survivors => survivors;
+    [SerializeField] private Transform[] miniGamePositions;
     [Header("Specs")]
     [SerializeField] [Range(0.5f, 10f)]
     [Tooltip("Minimum interaction distance for a neighbourhood")]
@@ -17,6 +18,11 @@ public class HiveManager : Singleton<HiveManager>
     private float closestDistance = 0.55f;
     public float ClosestDistance => closestDistance;
 
+
+    private void Start()
+    {
+        GameManager.ActionMiniGame += LineUpSurvivors;
+    }
 
     public void Join(Survivor newSurvivor)
     {
@@ -46,7 +52,7 @@ public class HiveManager : Singleton<HiveManager>
         survivors.Remove(survivor);
         SurvivorPool.Instance.PullObjectBackImmediate(survivor);
         // update borders
-        PlayerController.Instance.UpdateBorders(1);
+        PlayerController.Instance.UpdateBorders(-1);
         // update ui
     }
 
@@ -55,5 +61,19 @@ public class HiveManager : Singleton<HiveManager>
         // with object pooling
         var survivors = SurvivorPool.Instance.GetObject(count);
         survivors.ForEach(x => x.EnterTheHive());
+    }
+
+    private void LineUpSurvivors()
+    {
+        for (int i = 0; i < survivors.Count; i++)
+        {
+            var linePos = miniGamePositions[i].position;
+            survivors[i].GoToMiniGamePos(linePos);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.ActionMiniGame -= LineUpSurvivors;
     }
 }

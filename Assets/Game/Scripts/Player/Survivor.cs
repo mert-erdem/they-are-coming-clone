@@ -10,11 +10,12 @@ public class Survivor : MonoBehaviour
 
     private bool inHive = false;
     private State stateIdle, stateRun, stateCurrent;
+    private Vector3 miniGamePos;
 
     private void Awake()
     {
         stateIdle = new State(() => { }, () => { }, () => { });
-        stateRun = new State(Avoid, StartRunState, () => { });
+        stateRun = new State(Avoid, ChangeAnim, () => { });
         SetState(stateIdle);
     }
 
@@ -40,9 +41,9 @@ public class Survivor : MonoBehaviour
         stateCurrent.onStateEnter();
     }
 
-    private void StartRunState()
+    private void ChangeAnim()
     {
-        animator.SetTrigger("Run");
+        animator.SetTrigger("Change");
     }
 
     private void Avoid()
@@ -105,6 +106,13 @@ public class Survivor : MonoBehaviour
         inHive = true;
         SetState(stateRun);
         HiveManager.Instance.Join(this);
+    }
+
+    public void GoToMiniGamePos(Vector3 pos)
+    {
+        transform.position = pos;
+        SetState(stateIdle);
+        ChangeAnim();
     }
 
     private void Die()
