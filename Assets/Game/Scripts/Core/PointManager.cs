@@ -7,7 +7,7 @@ public class PointManager : Singleton<PointManager>
 
     void Start()
     {
-        GameManager.ActionGameEnd += SavePoints;
+        GameManager.ActionLevelPass += SavePoints;
 
         totalPoints = PlayerPrefs.GetInt("POINTS", 0);
         // update ui
@@ -27,6 +27,6 @@ public class PointManager : Singleton<PointManager>
 
     private void OnDestroy()
     {
-        GameManager.ActionGameEnd -= SavePoints;
+        GameManager.ActionLevelPass -= SavePoints;
     }
 }

@@ -21,6 +21,7 @@ public class HiveManager : Singleton<HiveManager>
 
     private void Start()
     {
+        GameManager.ActionGameStart += GiveWeaponsToFirsts;
         GameManager.ActionMiniGame += LineUpSurvivors;
     }
 
@@ -54,6 +55,11 @@ public class HiveManager : Singleton<HiveManager>
         // update borders
         PlayerController.Instance.UpdateBorders(-1);
         // update ui
+
+        if(survivors.Count == 0)
+        {
+            GameManager.ActionGameOver?.Invoke();
+        }
     }
 
     public void AddSurvivors(int count)
@@ -72,8 +78,15 @@ public class HiveManager : Singleton<HiveManager>
         }
     }
 
+    private void GiveWeaponsToFirsts()
+    {
+        var weaponManager = WeaponManager.Instance;
+        survivors.ForEach(x => weaponManager.GiveWeapon(x));
+    }
+
     private void OnDestroy()
     {
+        GameManager.ActionGameStart -= GiveWeaponsToFirsts;
         GameManager.ActionMiniGame -= LineUpSurvivors;
     }
 }

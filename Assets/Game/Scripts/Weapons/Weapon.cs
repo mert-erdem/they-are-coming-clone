@@ -9,6 +9,7 @@ public abstract class Weapon : MonoBehaviour
     public float FireRate;
     private float LastFireTime = 0f;
 
+
     private void Update()
     {
         if (Time.time >= LastFireTime)

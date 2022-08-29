@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class CanvasController : Singleton<CanvasController>
 {
-    [SerializeField] private GameObject panelMenu, panelInGame, panelMiniGame, panelEndGame;
+    [SerializeField] private GameObject panelMenu, panelInGame, panelGameOver, panelMiniGame, panelEndGame;
     [SerializeField] private TextMeshProUGUI textPoints, textEndGamePoints, textIndicator;
     [SerializeField] private Image imageProgressBar;
     [SerializeField] private GameObject topPointIndicator;
@@ -12,14 +12,21 @@ public class CanvasController : Singleton<CanvasController>
     void Start()
     {
         GameManager.ActionGameStart += SetInGameUi;
-        GameManager.ActionMiniGame += SetMiniGameUi;
-        GameManager.ActionGameEnd += SetEndGameUi;
+        //GameManager.ActionGameOver += SetGameOverUi;
+        //GameManager.ActionMiniGame += SetMiniGameUi;
+        //GameManager.ActionGameEnd += SetEndGameUi;
     }
 
     private void SetInGameUi()
     {
         panelMenu.SetActive(false);
-        panelInGame.SetActive(true);
+        //panelInGame.SetActive(true);
+    }
+
+    private void SetGameOverUi()
+    {
+        panelInGame.SetActive(false);
+        panelGameOver.SetActive(true);
     }
 
     private void SetMiniGameUi()
@@ -28,7 +35,7 @@ public class CanvasController : Singleton<CanvasController>
         panelMiniGame.SetActive(true);
     }
 
-    private void SetEndGameUi()
+    private void SetLevelPassUi()
     {
         topPointIndicator.SetActive(false);
         panelMiniGame.SetActive(false);
@@ -75,7 +82,8 @@ public class CanvasController : Singleton<CanvasController>
     private void OnDestroy()
     {
         GameManager.ActionGameStart -= SetInGameUi;
+        GameManager.ActionGameOver -= SetGameOverUi;
         GameManager.ActionMiniGame -= SetMiniGameUi;
-        GameManager.ActionGameEnd -= SetEndGameUi;
+        GameManager.ActionLevelPass -= SetLevelPassUi;
     }
 }

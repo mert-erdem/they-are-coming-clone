@@ -9,16 +9,18 @@ public class EnemySpawner : Singleton<EnemySpawner>
     [SerializeField] private float spawnDeltaTime = 2f;
     private float lastTimeSpawned = 0f;
 
-    private bool isDisabled = false;
+    private bool canSpawn = false;
 
     private void Start()
     {
-        GameManager.ActionMiniGame += Disable;
+        GameManager.ActionGameStart += TriggerCanSpawn;
+        GameManager.ActionGameOver += TriggerCanSpawn;
+        GameManager.ActionMiniGame += TriggerCanSpawn;
     }
 
     private void Update()
     {
-        if(!isDisabled && Time.time >= lastTimeSpawned)
+        if(canSpawn && Time.time >= lastTimeSpawned)
         {
             SpawnEnemy();
             lastTimeSpawned = Time.time + spawnDeltaTime;
@@ -41,13 +43,15 @@ public class EnemySpawner : Singleton<EnemySpawner>
         //TODO: Spawn enemies randomly in different types 
     }
 
-    private void Disable()
+    private void TriggerCanSpawn()
     {
-        isDisabled = true;
+        canSpawn = !canSpawn;
     }
 
     private void OnDestroy()
     {
-        GameManager.ActionMiniGame -= Disable;
+        GameManager.ActionGameStart -= TriggerCanSpawn;
+        GameManager.ActionGameOver -= TriggerCanSpawn;
+        GameManager.ActionMiniGame -= TriggerCanSpawn;
     }
 }

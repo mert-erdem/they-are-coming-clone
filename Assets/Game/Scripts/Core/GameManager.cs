@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
-    public static UnityAction ActionGameStart, ActionMiniGame, ActionGameEnd;
+    public static UnityAction ActionGameStart, ActionGameOver, ActionMiniGame, ActionLevelPass;
 
     public void LoadNextLevel()
     {
@@ -24,5 +24,10 @@ public class GameManager : Singleton<GameManager>
     public void CalculateTheProgress(float playerPosZ)
     {
         
+    }
+
+    private void PauseTheGame()
+    {
+        Time.timeScale = 0;
     }
 }

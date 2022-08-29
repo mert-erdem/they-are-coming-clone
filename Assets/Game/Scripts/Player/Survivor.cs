@@ -4,25 +4,35 @@ using UnityEngine;
 
 public class Survivor : MonoBehaviour
 {
+    [Header("Components")]
     [SerializeField] private new Rigidbody rigidbody;
     [SerializeField] private Animator animator;
-    [SerializeField] private List<Weapon> weapons;
+    [SerializeField] private SkinnedMeshRenderer meshRenderer;
 
-    private bool inHive = false;
+    [SerializeField] private List<Weapon> weapons;
+    [SerializeField] private Material matInHive, matOutHive;
+
+    private bool inHive = false, inHiveAtStart = false;
     private State stateIdle, stateRun, stateCurrent;
     private Vector3 miniGamePos;
 
     private void Awake()
     {
-        stateIdle = new State(() => { }, () => { }, () => { });
-        stateRun = new State(Avoid, ChangeAnim, () => { });
+        stateIdle = new State(() => { }, () => { }, ChangeAnim);
+        stateRun = new State(Avoid, ()=> { }, ChangeAnim);
         SetState(stateIdle);
     }
 
     private void Start()
     {
         if (CompareTag("HiveSurvivor"))// manually added survivor/s at editor time
+        {
             inHive = true;
+            inHiveAtStart = true;
+            meshRenderer.material = matInHive;
+            GameManager.ActionGameStart += PrepareInHiveState;
+        }
+            
 
         // TODO first survivors must be at runState when gamestart action fired
     }
@@ -105,6 +115,7 @@ public class Survivor : MonoBehaviour
     {
         inHive = true;
         SetState(stateRun);
+        meshRenderer.material = matInHive;
         HiveManager.Instance.Join(this);
     }
 
@@ -112,7 +123,6 @@ public class Survivor : MonoBehaviour
     {
         transform.position = pos;
         SetState(stateIdle);
-        ChangeAnim();
     }
 
     private void Die()
@@ -125,6 +135,16 @@ public class Survivor : MonoBehaviour
         {
             SurvivorPool.Instance.PullObjectBackImmediate(this);
         }
+
+        if(inHiveAtStart)
+        {
+            GameManager.ActionGameStart -= PrepareInHiveState;
+        }
+    }
+
+    private void PrepareInHiveState()
+    {
+        SetState(stateRun);
     }
 
     private void OnCollisionEnter(Collision collision)

@@ -15,15 +15,21 @@ public class PlayerController : Singleton<PlayerController>
 
     private Vector3 mouseRootPos;
     private float inputHorizontal;
+
+    private bool controlActive = false;
     
 
     void Start()
     {
-        
+        GameManager.ActionGameStart += TriggerControlActive;
+        GameManager.ActionGameOver += TriggerControlActive;
+        GameManager.ActionMiniGame += TriggerControlActive;
     }
 
     void Update()
     {
+        if (!controlActive) return;
+
         GetInput();
         Move();
     }
@@ -100,6 +106,11 @@ public class PlayerController : Singleton<PlayerController>
         }
     }
 
+    private void TriggerControlActive()
+    {
+        controlActive = !controlActive;
+    }
+
     private void OnTriggerEnter(Collider other)// side root (for gates)
     {
         if(other.CompareTag("Gate"))
@@ -115,7 +126,13 @@ public class PlayerController : Singleton<PlayerController>
         else if(other.CompareTag("MiniGame"))
         {
             GameManager.ActionMiniGame?.Invoke();
-            this.enabled = false;
         }
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.ActionGameStart -= TriggerControlActive;
+        GameManager.ActionGameOver -= TriggerControlActive;
+        GameManager.ActionMiniGame -= TriggerControlActive;
     }
 }

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
+    [Header("Components")]
+    [SerializeField] private Animator animator;
+
     [Header("Specs")]
     [SerializeField] private int health = 1;
     public int Health
@@ -25,16 +28,24 @@ public abstract class Enemy : MonoBehaviour
     private void OnEnable()
     {
         currentHealth = health;
+        GameManager.ActionGameOver += Stop;
     }
 
     private void Update()
     {
+        if (target == null) return;
+
         ChaseThePlayer();
     }
 
     public void SetTarget(Transform target)
     {
         this.target = target;
+    }
+
+    private void Stop()
+    {
+        target = null;
     }
 
     private void ChaseThePlayer()
@@ -61,5 +72,6 @@ public abstract class Enemy : MonoBehaviour
         // animation etc.
         // object pool for enemies
         EnemyPool.Instance.PullObjectBackImmediate(this);
+        GameManager.ActionGameOver -= Stop;
     }
 }
