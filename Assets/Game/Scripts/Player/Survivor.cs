@@ -16,6 +16,7 @@ public class Survivor : MonoBehaviour
     private State stateIdle, stateRun, stateCurrent;
     private Vector3 miniGamePos;
 
+
     private void Awake()
     {
         stateIdle = new State(() => { }, () => { }, ChangeAnim);
@@ -31,6 +32,7 @@ public class Survivor : MonoBehaviour
             inHiveAtStart = true;
             meshRenderer.material = matInHive;
             GameManager.ActionGameStart += PrepareInHiveState;
+            GameManager.ActionLevelPass += StopFiring;
         }
             
 
@@ -111,12 +113,18 @@ public class Survivor : MonoBehaviour
         weapon.gameObject.SetActive(true);
     }
 
+    public void StopFiring()
+    {
+        weapons.ForEach(x => x.gameObject.SetActive(false));
+    }
+
     public void EnterTheHive()
     {
         inHive = true;
         SetState(stateRun);
         meshRenderer.material = matInHive;
         HiveManager.Instance.Join(this);
+        GameManager.ActionLevelPass += StopFiring;
     }
 
     public void GoToMiniGamePos(Vector3 pos)
@@ -140,6 +148,8 @@ public class Survivor : MonoBehaviour
         {
             GameManager.ActionGameStart -= PrepareInHiveState;
         }
+
+        GameManager.ActionLevelPass -= StopFiring;
     }
 
     private void PrepareInHiveState()
@@ -154,11 +164,15 @@ public class Survivor : MonoBehaviour
             if (!inHive)
             {
                 EnterTheHive();
-            }         
+            }
         }
-        else if(collision.collider.CompareTag("Enemy") || collision.collider.CompareTag("Obstacle"))
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.CompareTag("Enemy") || other.CompareTag("Obstacle"))
         {
-            Die();// whether in hive or not
+            Die();
         }
     }
 }

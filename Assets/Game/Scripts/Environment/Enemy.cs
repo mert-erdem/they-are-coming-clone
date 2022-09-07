@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public abstract class Enemy : MonoBehaviour
 {
     [Header("Components")]
     [SerializeField] private Animator animator;
+    [SerializeField] private new Rigidbody rigidbody;
+    [SerializeField] private NavMeshAgent agent;
 
     [Header("Specs")]
     [SerializeField] private int health = 1;
@@ -25,17 +28,18 @@ public abstract class Enemy : MonoBehaviour
     private int currentHealth;
 
 
-    private void OnEnable()
-    {
-        currentHealth = health;
-        GameManager.ActionGameOver += Stop;
-    }
-
     private void Update()
     {
         if (target == null) return;
-
+        
         ChaseThePlayer();
+    }
+
+    public void OnSpawn()
+    {
+        currentHealth = health;
+        GameManager.ActionGameOver += Stop;
+        EnemyHiveManager.Instance.Join(this);
     }
 
     public void SetTarget(Transform target)
@@ -46,17 +50,22 @@ public abstract class Enemy : MonoBehaviour
     private void Stop()
     {
         target = null;
+        rigidbody.isKinematic = true;
+        agent.isStopped = true;
+        animator.SetBool("Idle", true);
     }
 
     private void ChaseThePlayer()
     {
-        var targetPos = target.position;
-        targetPos.z -= 1.5f;
-        var newPos = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
-        var lookOnLook = Quaternion.LookRotation(targetPos - transform.position);
-        var newRot = Quaternion.Slerp(transform.rotation, lookOnLook, Time.deltaTime * 10f);
+        agent.SetDestination(target.position);
 
-        transform.SetPositionAndRotation(newPos, newRot);
+        //var targetPos = target.position;
+        //targetPos.z -= 1.5f;
+        //var newPos = Vector3.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
+        //var lookOnLook = Quaternion.LookRotation(targetPos - transform.position);
+        //var newRot = Quaternion.Slerp(transform.rotation, lookOnLook, Time.deltaTime * 10f);
+        //
+        //transform.SetPositionAndRotation(newPos, newRot);
     }
 
     public void TakeDamage(int damage)
@@ -73,5 +82,6 @@ public abstract class Enemy : MonoBehaviour
         // object pool for enemies
         EnemyPool.Instance.PullObjectBackImmediate(this);
         GameManager.ActionGameOver -= Stop;
+        EnemyHiveManager.Instance.Leave(this);
     }
 }

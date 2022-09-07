@@ -54,12 +54,17 @@ public class HiveManager : Singleton<HiveManager>
         SurvivorPool.Instance.PullObjectBackImmediate(survivor);
         // update borders
         PlayerController.Instance.UpdateBorders(-1);
-        // update ui
 
-        if(survivors.Count == 0)
+        if (survivors.Count == 0)
         {
             GameManager.ActionGameOver?.Invoke();
+            EnemyHiveManager.Instance.UpdateTheTarget(null);
+            return;
         }
+
+        // enemies' target changed
+        EnemyHiveManager.Instance.UpdateTheTarget(survivors[0].transform);
+        // update ui
     }
 
     public void AddSurvivors(int count)

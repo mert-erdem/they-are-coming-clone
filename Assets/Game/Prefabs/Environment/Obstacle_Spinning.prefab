@@ -190,6 +190,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2551186269439822322}
   - component: {fileID: 1729777249282367609}
+  - component: {fileID: 6805462829414392797}
   m_Layer: 0
   m_Name: Obstacle_Spinning
   m_TagString: Obstacle
@@ -219,12 +220,28 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3394632217378334321}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_Material: {fileID: 13400000, guid: 7395f69b402c0423e81f2e8a2ab95fd9, type: 2}
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 2.5, y: 0.5, z: 2.5}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!208 &6805462829414392797
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3394632217378334321}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.75, y: 0.25, z: 0.75}
+  m_MoveThreshold: 0
+  m_Carve: 1
+  m_CarveOnlyStationary: 0
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0
 --- !u!1 &4109329360782068477
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class EnemySpawner : Singleton<EnemySpawner>
 {
-    [SerializeField] private Transform target, spawnBorderLeft, spawnBorderRight;
+    [SerializeField] private Transform spawnBorderLeft, spawnBorderRight;
     [Header("Specs")]
     [SerializeField] private float spawnDeltaTime = 2f;
     private float lastTimeSpawned = 0f;
-
     private bool canSpawn = false;
+
 
     private void Start()
     {
-        GameManager.ActionGameStart += TriggerCanSpawn;
-        GameManager.ActionGameOver += TriggerCanSpawn;
-        GameManager.ActionMiniGame += TriggerCanSpawn;
+        GameManager.ActionGameStart += StartSpawn;
+        GameManager.ActionGameOver += StopSpawn;
+        GameManager.ActionMiniGame += StopSpawn;
     }
 
     private void Update()
@@ -34,24 +34,30 @@ public class EnemySpawner : Singleton<EnemySpawner>
         // object pool
         var enemy = EnemyPool.Instance.GetObject(typeof(BasicEnemy));
         enemy.transform.position = spawnPos;
-        enemy.SetTarget(target);
         // change rotation
         var enemyRot = enemy.transform.rotation;
         enemyRot.y = 180f;
         enemy.transform.rotation = enemyRot;
 
-        //TODO: Spawn enemies randomly in different types 
+        enemy.OnSpawn();
+
+        //TODO: Spawn enemies randomly in different types
     }
 
-    private void TriggerCanSpawn()
+    private void StartSpawn()
     {
-        canSpawn = !canSpawn;
+        canSpawn = true;
+    }
+
+    private void StopSpawn()
+    {
+        canSpawn = false;
     }
 
     private void OnDestroy()
     {
-        GameManager.ActionGameStart -= TriggerCanSpawn;
-        GameManager.ActionGameOver -= TriggerCanSpawn;
-        GameManager.ActionMiniGame -= TriggerCanSpawn;
+        GameManager.ActionGameStart -= StartSpawn;
+        GameManager.ActionGameOver -= StopSpawn;
+        GameManager.ActionMiniGame -= StopSpawn;
     }
 }

@@ -17,7 +17,7 @@ public class PlayerController : Singleton<PlayerController>
     private float inputHorizontal;
 
     private bool controlActive = false;
-    
+    private Vector3 currentSideRootPos;
 
     void Start()
     {
@@ -56,10 +56,10 @@ public class PlayerController : Singleton<PlayerController>
     {
         transform.Translate(speed * Time.deltaTime * -transform.forward);
 
-        var sideRootPos = sideMovementRoot.localPosition;
-        sideRootPos += speedHorizontal * inputHorizontal * Vector3.right;
-        sideRootPos.x = Mathf.Clamp(sideRootPos.x, borderLeft.position.x, borderRight.position.x);
-        sideMovementRoot.localPosition = sideRootPos;
+        currentSideRootPos = sideMovementRoot.localPosition;
+        currentSideRootPos += speedHorizontal * inputHorizontal * Vector3.right;
+        currentSideRootPos.x = Mathf.Clamp(currentSideRootPos.x, borderLeft.position.x, borderRight.position.x);
+        sideMovementRoot.localPosition = currentSideRootPos;
     }
 
     /// <summary>
