@@ -4,21 +4,21 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
-    public static UnityAction ActionGameStart, ActionGameOver, ActionMiniGame, ActionLevelPass;
+    public static UnityAction ActionGameStart, ActionGameOver, ActionMiniGame, ActionLevelPass, ActionLevelRestart;
+    private int CurrentLevelIndex => SceneManager.GetActiveScene().buildIndex;
 
     public void LoadNextLevel()
     {
-        int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
-        int nextLevel = currentLevelIndex + 1;
+        int nextLevel = CurrentLevelIndex + 1;
 
         PlayerPrefs.SetInt("LEVEL", nextLevel);
-        SceneManager.LoadScene(currentLevelIndex + 1);
+        SceneManager.LoadScene(nextLevel);
     }
 
     public void RestartLevel()
     {
-        int currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
-        SceneManager.LoadScene(currentLevelIndex);
+        ActionLevelRestart?.Invoke();
+        SceneManager.LoadScene(CurrentLevelIndex);
     }
 
     public void CalculateTheProgress(float playerPosZ)

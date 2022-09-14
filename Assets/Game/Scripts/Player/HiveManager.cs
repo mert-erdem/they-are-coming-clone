@@ -23,6 +23,8 @@ public class HiveManager : Singleton<HiveManager>
     {
         GameManager.ActionGameStart += GiveWeaponsToFirsts;
         GameManager.ActionMiniGame += LineUpSurvivors;
+        GameManager.ActionLevelRestart += DestroyAllSurvivors;
+        GameManager.ActionLevelPass += StopFiring;
     }
 
     public void Join(Survivor newSurvivor)
@@ -59,9 +61,9 @@ public class HiveManager : Singleton<HiveManager>
         {
             GameManager.ActionGameOver?.Invoke();
             EnemyHiveManager.Instance.UpdateTheTarget(null);
+
             return;
         }
-
         // enemies' target changed
         EnemyHiveManager.Instance.UpdateTheTarget(survivors[0].transform);
         // update ui
@@ -89,9 +91,21 @@ public class HiveManager : Singleton<HiveManager>
         survivors.ForEach(x => weaponManager.GiveWeapon(x));
     }
 
+    private void StopFiring()
+    {
+        survivors.ForEach(x => x.StopFiring());
+    }
+
+    private void DestroyAllSurvivors()
+    {
+        survivors.ForEach(x => SurvivorPool.Instance.PullObjectBackImmediate(x));
+    }
+
     private void OnDestroy()
     {
         GameManager.ActionGameStart -= GiveWeaponsToFirsts;
         GameManager.ActionMiniGame -= LineUpSurvivors;
+        GameManager.ActionLevelRestart -= DestroyAllSurvivors;
+        GameManager.ActionLevelPass -= StopFiring;
     }
 }

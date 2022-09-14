@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+[SelectionBase]
 public abstract class Enemy : MonoBehaviour
 {
     [Header("Components")]
@@ -38,7 +39,6 @@ public abstract class Enemy : MonoBehaviour
     public void OnSpawn()
     {
         currentHealth = health;
-        GameManager.ActionGameOver += Stop;
         EnemyHiveManager.Instance.Join(this);
     }
 
@@ -47,7 +47,7 @@ public abstract class Enemy : MonoBehaviour
         this.target = target;
     }
 
-    private void Stop()
+    public void Stop()
     {
         target = null;
         rigidbody.isKinematic = true;
@@ -80,8 +80,6 @@ public abstract class Enemy : MonoBehaviour
     {
         // animation etc.
         // object pool for enemies
-        EnemyPool.Instance.PullObjectBackImmediate(this);
-        GameManager.ActionGameOver -= Stop;
         EnemyHiveManager.Instance.Leave(this);
     }
 }

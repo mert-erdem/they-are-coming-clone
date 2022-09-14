@@ -28,7 +28,7 @@ public class ObjectPoolMultiple<T, T1> : MonoBehaviour where T : Component where
         else
             Destroy(gameObject);
 
-        DontDestroyOnLoad(this.transform.parent);
+        //DontDestroyOnLoad(this.transform.parent);
     }
 
     private void Start()
@@ -90,17 +90,48 @@ public class ObjectPoolMultiple<T, T1> : MonoBehaviour where T : Component where
 
     public void PullObjectBack(T theObject)
     {
+        if (!IsObjectInPool(theObject))
+        {
+            Destroy(theObject.gameObject);
+
+            return;
+        }
+
         StartCoroutine(PullObjectBackRoutine(theObject));
     }
     private IEnumerator PullObjectBackRoutine(T theObject)
     {
         yield return new WaitForSeconds(objectLifetime);
 
+        theObject.transform.SetParent(this.transform.parent);
         theObject.gameObject.SetActive(false);
     }
 
     public void PullObjectBackImmediate(T theObject)
     {
+        if (!IsObjectInPool(theObject))
+        {
+            Destroy(theObject.gameObject);
+
+            return;
+        }
+
+        theObject.transform.SetParent(this.transform.parent);
         theObject.gameObject.SetActive(false);
+    }
+
+    private bool IsObjectInPool(T theObject)
+    {
+        bool objectInPool = false;
+
+        foreach (var pool in pools)
+        {
+            if (pool.Contains(theObject))
+            {
+                objectInPool = true;
+            }
+        }
+
+        return objectInPool;
     }
 }

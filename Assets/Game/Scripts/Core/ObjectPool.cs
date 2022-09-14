@@ -20,7 +20,7 @@ public class ObjectPool<T, T1> : MonoBehaviour where T : Component where T1 : Co
         else
             Destroy(gameObject);
 
-        DontDestroyOnLoad(this.transform.parent);
+        //DontDestroyOnLoad(this.transform.parent);
     }
 
     private void Start()
@@ -67,17 +67,33 @@ public class ObjectPool<T, T1> : MonoBehaviour where T : Component where T1 : Co
 
     public void PullObjectBack(T theObject)
     {
+        if (!pool.Contains(theObject))
+        {
+            Destroy(theObject.gameObject);
+
+            return;
+        }
+
         StartCoroutine(PullObjectBackRoutine(theObject));
     }
     private IEnumerator PullObjectBackRoutine(T theObject)
     {
         yield return new WaitForSeconds(objectLifetime);
 
+        theObject.transform.SetParent(this.transform.parent);
         theObject.gameObject.SetActive(false);
     }
 
     public void PullObjectBackImmediate(T theObject)
     {
+        if (!pool.Contains(theObject))
+        {
+            Destroy(theObject.gameObject);
+
+            return;
+        }
+
+        theObject.transform.SetParent(this.transform.parent);
         theObject.gameObject.SetActive(false);
     }
 }

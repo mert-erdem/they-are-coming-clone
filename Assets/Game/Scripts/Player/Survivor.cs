@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[SelectionBase]
 public class Survivor : MonoBehaviour
 {
     [Header("Components")]
@@ -14,7 +15,6 @@ public class Survivor : MonoBehaviour
 
     private bool inHive = false, inHiveAtStart = false;
     private State stateIdle, stateRun, stateCurrent;
-    private Vector3 miniGamePos;
 
 
     private void Awake()
@@ -28,15 +28,10 @@ public class Survivor : MonoBehaviour
     {
         if (CompareTag("HiveSurvivor"))// manually added survivor/s at editor time
         {
-            inHive = true;
-            inHiveAtStart = true;
+            inHive = inHiveAtStart = true;
             meshRenderer.material = matInHive;
             GameManager.ActionGameStart += PrepareInHiveState;
-            GameManager.ActionLevelPass += StopFiring;
         }
-            
-
-        // TODO first survivors must be at runState when gamestart action fired
     }
 
     void Update()
@@ -55,7 +50,8 @@ public class Survivor : MonoBehaviour
 
     private void ChangeAnim()
     {
-        animator.SetTrigger("Change");
+        if(animator != null)
+           animator.SetTrigger("Change");
     }
 
     private void Avoid()
@@ -116,6 +112,7 @@ public class Survivor : MonoBehaviour
     public void StopFiring()
     {
         weapons.ForEach(x => x.gameObject.SetActive(false));
+        SetState(stateIdle);
     }
 
     public void EnterTheHive()
@@ -124,7 +121,6 @@ public class Survivor : MonoBehaviour
         SetState(stateRun);
         meshRenderer.material = matInHive;
         HiveManager.Instance.Join(this);
-        GameManager.ActionLevelPass += StopFiring;
     }
 
     public void GoToMiniGamePos(Vector3 pos)
@@ -137,19 +133,17 @@ public class Survivor : MonoBehaviour
     {
         if(inHive)
         {
+            if (inHiveAtStart)
+            {
+                GameManager.ActionGameStart -= PrepareInHiveState;
+            }
+
             HiveManager.Instance.Leave(this);
         }
         else
         {
-            SurvivorPool.Instance.PullObjectBackImmediate(this);
+            Destroy(this.gameObject);
         }
-
-        if(inHiveAtStart)
-        {
-            GameManager.ActionGameStart -= PrepareInHiveState;
-        }
-
-        GameManager.ActionLevelPass -= StopFiring;
     }
 
     private void PrepareInHiveState()

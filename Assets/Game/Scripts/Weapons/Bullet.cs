@@ -8,6 +8,12 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float speed = 10f;
     [SerializeField] private int damage = 1;
 
+
+    private void Start()
+    {
+        GameManager.ActionLevelRestart += DestroySelf;
+    }
+
     private void Update()
     {
         transform.Translate(speed * Time.deltaTime * transform.forward);
@@ -23,5 +29,15 @@ public class Bullet : MonoBehaviour
                 BulletPool.Instance.PullObjectBackImmediate(this);
             }
         }
+    }
+
+    private void DestroySelf()
+    {
+        BulletPool.Instance.PullObjectBackImmediate(this);
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.ActionLevelRestart -= DestroySelf;
     }
 }

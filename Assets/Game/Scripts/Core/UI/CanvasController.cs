@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class CanvasController : Singleton<CanvasController>
 {
-    [SerializeField] private GameObject panelMenu, panelInGame, panelGameOver, panelMiniGame, panelEndGame;
+    [SerializeField] private GameObject panelMenu, panelInGame, panelGameOver, panelMiniGame, panelLevelPass;
     [SerializeField] private TextMeshProUGUI textPoints, textEndGamePoints, textIndicator;
     [SerializeField] private Image imageProgressBar;
     [SerializeField] private GameObject topPointIndicator;
@@ -12,15 +12,15 @@ public class CanvasController : Singleton<CanvasController>
     void Start()
     {
         GameManager.ActionGameStart += SetInGameUi;
-        //GameManager.ActionGameOver += SetGameOverUi;
+        GameManager.ActionGameOver += SetGameOverUi;
         //GameManager.ActionMiniGame += SetMiniGameUi;
-        //GameManager.ActionGameEnd += SetEndGameUi;
+        GameManager.ActionLevelPass += SetLevelPassUi;
     }
 
     private void SetInGameUi()
     {
         panelMenu.SetActive(false);
-        //panelInGame.SetActive(true);
+        panelInGame.SetActive(true);
     }
 
     private void SetGameOverUi()
@@ -37,9 +37,10 @@ public class CanvasController : Singleton<CanvasController>
 
     private void SetLevelPassUi()
     {
-        topPointIndicator.SetActive(false);
-        panelMiniGame.SetActive(false);
-        panelEndGame.SetActive(true);
+        //topPointIndicator.SetActive(false);
+        //panelMiniGame.SetActive(false);
+        panelInGame.SetActive(false);
+        panelLevelPass.SetActive(true);
     }
 
     #region UI Buttons' Methods
@@ -53,7 +54,7 @@ public class CanvasController : Singleton<CanvasController>
         GameManager.Instance.LoadNextLevel();
     }
 
-    public void ButtonReplayPressed()
+    public void ButtonRestartPressed()
     {
         GameManager.Instance.RestartLevel();
     }
