@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game.Core;
 using UnityEngine;
 
 [SelectionBase]
@@ -85,9 +86,8 @@ public class PlayerController : Singleton<PlayerController>
     {
         char process = gateName[0];
         string number = gateName.Substring(1, gateName.Length - 1);
-        bool success = int.TryParse(number, out int count);
         
-        if (success)
+        if (int.TryParse(number, out int count))
         {
             switch (process)
             {
@@ -99,10 +99,6 @@ public class PlayerController : Singleton<PlayerController>
                     HiveManager.Instance.AddSurvivors(count);
                     break;
             }
-        }
-        else
-        {
-            print("Couldn't parse the gate");
         }
     }
 

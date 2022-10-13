@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Router : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        
+        StartCoroutine(LoadTheGame());
     }
 
-    // Update is called once per frame
-    void Update()
+    private IEnumerator LoadTheGame()
     {
-        
+        yield return new WaitForSeconds(1.5f);
+
+        int lastLevelIndex = PlayerPrefs.GetInt("LEVEL", 1);
+        SceneManager.LoadScene(lastLevelIndex);
     }
 }

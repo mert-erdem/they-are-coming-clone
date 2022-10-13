@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
+using Game.Core;
 using UnityEngine;
 
 public class CameraManager : Singleton<CameraManager>
 {
     [SerializeField] private CinemachineVirtualCamera cmInGame, cmMiniGame;
+    [SerializeField] private Camera mainCam;
+    public Camera MainCam => mainCam;
 
     private void Start()
     {

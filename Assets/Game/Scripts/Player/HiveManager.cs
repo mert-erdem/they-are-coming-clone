@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game.Core;
 using UnityEngine;
 
 public class HiveManager : Singleton<HiveManager>
@@ -25,6 +26,10 @@ public class HiveManager : Singleton<HiveManager>
         GameManager.ActionMiniGame += LineUpSurvivors;
         GameManager.ActionLevelRestart += DestroyAllSurvivors;
         GameManager.ActionLevelPass += StopFiring;
+        GameManager.ActionLevelPass += DestroyAllSurvivors;
+
+        // update ui
+        CanvasController.Instance.SetIndicatorText(survivors.Count);
     }
 
     public void Join(Survivor newSurvivor)
@@ -33,9 +38,9 @@ public class HiveManager : Singleton<HiveManager>
 
         survivors.Add(newSurvivor);
 
-        var newSurvivorPos = hiveRoot.position;
-        newSurvivorPos.y = newSurvivor.transform.position.y;
-        newSurvivor.transform.position = newSurvivorPos;
+        var position = hiveRoot.position;
+        position.y = newSurvivor.transform.position.y;
+        newSurvivor.transform.position = position;
 
         newSurvivor.transform.SetParent(hiveRoot);
 
@@ -47,15 +52,20 @@ public class HiveManager : Singleton<HiveManager>
         }
 
         // update ui
+        CanvasController.Instance.SetIndicatorText(survivors.Count);
     }
 
     public void Leave(Survivor survivor)
     {
         // remove survivor
         survivors.Remove(survivor);
+        survivor.ResetWeapon();// get default weapon before turning back to pool
         SurvivorPool.Instance.PullObjectBackImmediate(survivor);
         // update borders
-        PlayerController.Instance.UpdateBorders(-1);
+        if (survivors.Count % 5 == 0)
+        {
+            PlayerController.Instance.UpdateBorders(-1);
+        }
 
         if (survivors.Count == 0)
         {
@@ -67,6 +77,7 @@ public class HiveManager : Singleton<HiveManager>
         // enemies' target changed
         EnemyHiveManager.Instance.UpdateTheTarget(survivors[0].transform);
         // update ui
+        CanvasController.Instance.SetIndicatorText(survivors.Count);
     }
 
     public void AddSurvivors(int count)
@@ -98,7 +109,10 @@ public class HiveManager : Singleton<HiveManager>
 
     private void DestroyAllSurvivors()
     {
-        survivors.ForEach(x => SurvivorPool.Instance.PullObjectBackImmediate(x));
+        survivors.ForEach(x =>
+        {   x.ResetWeapon();
+            SurvivorPool.Instance.PullObjectBackImmediate(x);
+        });
     }
 
     private void OnDestroy()
@@ -107,5 +121,6 @@ public class HiveManager : Singleton<HiveManager>
         GameManager.ActionMiniGame -= LineUpSurvivors;
         GameManager.ActionLevelRestart -= DestroyAllSurvivors;
         GameManager.ActionLevelPass -= StopFiring;
+        GameManager.ActionLevelPass -= DestroyAllSurvivors;
     }
 }

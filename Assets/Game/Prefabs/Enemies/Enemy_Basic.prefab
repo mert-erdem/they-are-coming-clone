@@ -164,7 +164,7 @@ MonoBehaviour:
   rigidbody: {fileID: 1314825731615762263}
   agent: {fileID: 3645036968295261594}
   health: 1
-  speed: 7
+  speed: 8
 --- !u!195 &3645036968295261594
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -175,7 +175,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.25
-  m_Speed: 7
+  m_Speed: 6
   m_Acceleration: 100000000
   avoidancePriority: 50
   m_AngularSpeed: 2880

@@ -1,3 +1,4 @@
+using Game.Core;
 using UnityEngine;
 
 public class PointManager : Singleton<PointManager>

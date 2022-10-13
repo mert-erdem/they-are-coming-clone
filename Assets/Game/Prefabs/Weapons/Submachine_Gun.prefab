@@ -97,7 +97,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7803702306016274674
 Transform:
   m_ObjectHideFlags: 0
@@ -129,7 +129,6 @@ MonoBehaviour:
   Bullet: {fileID: 2576287913922500537, guid: 2bd3e5fd9e35e43d1ac7022f10d82af7, type: 3}
   Muzzle: {fileID: 7803702306285769439}
   FireRate: 0.33
-  LastFireTime: 0
 --- !u!1 &7803702306285769438
 GameObject:
   m_ObjectHideFlags: 0

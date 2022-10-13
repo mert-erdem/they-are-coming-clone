@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game.Core;
 using UnityEngine;
 
 [SelectionBase]
@@ -17,6 +18,8 @@ public class Survivor : MonoBehaviour
     private State stateIdle, stateRun, stateCurrent;
 
 
+    private Vector3 vecCenter;
+
     private void Awake()
     {
         stateIdle = new State(() => { }, () => { }, ChangeAnim);
@@ -26,6 +29,8 @@ public class Survivor : MonoBehaviour
 
     private void Start()
     {
+        vecCenter = transform.parent.localPosition;
+
         if (CompareTag("HiveSurvivor"))// manually added survivor/s at editor time
         {
             inHive = inHiveAtStart = true;
@@ -37,6 +42,7 @@ public class Survivor : MonoBehaviour
     void Update()
     {
         stateCurrent.onUpdate();
+        
     }
 
     private void SetState(State state)
@@ -48,34 +54,37 @@ public class Survivor : MonoBehaviour
         stateCurrent.onStateEnter();
     }
 
-    private void ChangeAnim()
-    {
-        if(animator != null)
-           animator.SetTrigger("Change");
-    }
+    
 
     private void Avoid()
     {
-        var vecCenter = Vector3.zero;
+        //var vecCenter = Vector3.zero;
         var vecAvoid = Vector3.zero;
         float distance;
         int groupSize = 0;
+        var hiveManager = HiveManager.Instance;
 
-        foreach (var otherSurvivor in HiveManager.Instance.Survivors)
+        foreach (var otherSurvivor in hiveManager.Survivors)
         {
             if (otherSurvivor != this)
             {
                 var otherSurvivorPos = otherSurvivor.transform.localPosition;
                 distance = Vector3.Distance(otherSurvivorPos, transform.localPosition);
 
-                if (distance <= HiveManager.Instance.NeighbourDistance)// inside of the neighbourhood
+                if (distance <= hiveManager.NeighbourDistance)// inside of the neighbourhood
                 {
-                    vecCenter += otherSurvivorPos;
+                    //vecCenter += otherSurvivorPos;
                     groupSize++;
 
-                    if(distance <= HiveManager.Instance.ClosestDistance)// the other survivor is so close to this
+                    if(distance <= hiveManager.ClosestDistance)// the other survivor is so close to this
                     {
                         vecAvoid += transform.localPosition - otherSurvivorPos;
+
+                        if(vecAvoid == Vector3.zero)
+                        {
+                            float randomAvoidValue = Random.Range(0.5f, 0.75f);
+                            vecAvoid += new Vector3(randomAvoidValue, 0, randomAvoidValue);
+                        }
                     }
                 }
             }
@@ -83,10 +92,31 @@ public class Survivor : MonoBehaviour
 
         if(groupSize > 0)
         {
+            //vecCenter /= groupSize;
             var currentPos = transform.localPosition;
             currentPos += vecAvoid / groupSize;
+            //currentPos = (vecCenter - currentPos) * 1f;
             transform.localPosition = currentPos;
-        }     
+        }
+
+        Align();
+    }
+
+    private void Align()
+    {
+        var clampedPos = transform.position;
+        clampedPos.x = Mathf.Clamp(clampedPos.x, -3.5f, 3.5f);
+        clampedPos.y = 0f;
+        transform.position = clampedPos;
+        PerformCohesion();
+    }
+
+    public void PerformCohesion()
+    {
+        var currentPos = transform.localPosition;
+        if(Vector3.Distance(currentPos, vecCenter) > 3f)
+           currentPos += (vecCenter - currentPos) * 0.1f;
+        transform.localPosition = currentPos;
     }
 
     public void ChangeWeapon(string weaponName)
@@ -94,6 +124,19 @@ public class Survivor : MonoBehaviour
         foreach (var weapon in weapons)
         {
             if (weapon.name == weaponName)
+                weapon.gameObject.SetActive(true);
+            else
+                weapon.gameObject.SetActive(false);
+        }
+    }
+
+    public void ResetWeapon()// before turning back to the pool
+    {
+        string defaultWeapon = weapons[0].name;
+
+        foreach (var weapon in weapons)
+        {
+            if (weapon.name == defaultWeapon)
                 weapon.gameObject.SetActive(true);
             else
                 weapon.gameObject.SetActive(false);
@@ -129,6 +172,12 @@ public class Survivor : MonoBehaviour
         SetState(stateIdle);
     }
 
+    private void ChangeAnim()
+    {
+        if (animator != null)
+            animator.SetTrigger("Change");
+    }
+
     private void Die()
     {
         if(inHive)
@@ -153,18 +202,20 @@ public class Survivor : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.collider.CompareTag("HiveSurvivor"))
+        
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("HiveSurvivor"))
         {
             if (!inHive)
             {
                 EnterTheHive();
             }
         }
-    }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.CompareTag("Enemy") || other.CompareTag("Obstacle"))
+        if (other.CompareTag("Enemy") || other.CompareTag("Obstacle"))
         {
             Die();
         }
