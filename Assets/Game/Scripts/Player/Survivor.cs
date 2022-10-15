@@ -18,8 +18,6 @@ public class Survivor : MonoBehaviour
     private State stateIdle, stateRun, stateCurrent;
 
 
-    private Vector3 vecCenter;
-
     private void Awake()
     {
         stateIdle = new State(() => { }, () => { }, ChangeAnim);
@@ -29,8 +27,6 @@ public class Survivor : MonoBehaviour
 
     private void Start()
     {
-        vecCenter = transform.parent.localPosition;
-
         if (CompareTag("HiveSurvivor"))// manually added survivor/s at editor time
         {
             inHive = inHiveAtStart = true;
@@ -82,8 +78,9 @@ public class Survivor : MonoBehaviour
 
                         if(vecAvoid == Vector3.zero)
                         {
-                            float randomAvoidValue = Random.Range(0.5f, 0.75f);
-                            vecAvoid += new Vector3(randomAvoidValue, 0, randomAvoidValue);
+                            float randomValueX = Random.Range(0.55f, 0.75f) * (Random.Range(0, 1) * 2 - 1);
+                            float randomValueZ = Random.Range(0.55f, 0.75f) * (Random.Range(0, 1) * 2 - 1);
+                            vecAvoid += new Vector3(randomValueX, 0, randomValueZ);
                         }
                     }
                 }
@@ -108,9 +105,10 @@ public class Survivor : MonoBehaviour
         clampedPos.x = Mathf.Clamp(clampedPos.x, -3.5f, 3.5f);
         clampedPos.y = 0f;
         transform.position = clampedPos;
-        PerformCohesion();
+        //PerformCohesion();
     }
 
+    /*
     public void PerformCohesion()
     {
         var currentPos = transform.localPosition;
@@ -118,6 +116,7 @@ public class Survivor : MonoBehaviour
            currentPos += (vecCenter - currentPos) * 0.1f;
         transform.localPosition = currentPos;
     }
+    */
 
     public void ChangeWeapon(string weaponName)
     {
