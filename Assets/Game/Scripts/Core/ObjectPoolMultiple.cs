@@ -10,11 +10,8 @@ using UnityEngine;
 /// <typeparam name="T1"></typeparam>
 namespace Game.Core
 {
-    public class ObjectPoolMultiple<T, T1> : MonoBehaviour where T : Component where T1 : Component
+    public class ObjectPoolMultiple<T, T1> : Singleton<ObjectPoolMultiple<T, T1>> where T : Component where T1 : Component
     {
-        private static ObjectPoolMultiple<T, T1> instance;
-        public static ObjectPoolMultiple<T, T1> Instance => instance ??= FindObjectOfType<ObjectPoolMultiple<T, T1>>();
-
         [SerializeField] private List<T> poolObjects = new List<T>();
         [SerializeField] private List<int> poolSizes = new List<int>();
         [SerializeField] private float objectLifetime = 1f;
@@ -23,18 +20,10 @@ namespace Game.Core
         private int ObjectCount => poolObjects.Count;
 
 
-        private void Awake()
-        {
-            if (instance == null)
-                instance = this;
-            else
-                Destroy(gameObject);
-
-            DontDestroyOnLoad(this.transform.parent);
-        }
-
         private void Start()
         {
+            DontDestroyOnLoad(this.transform.parent);
+
             for (int i = 0; i < ObjectCount; i++)
             {
                 var pool = new List<T>();
